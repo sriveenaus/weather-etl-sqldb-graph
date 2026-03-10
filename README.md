@@ -16,6 +16,9 @@ exposed to the agent via a broad COPY in the Dockerfile, the multi-container
 metadata flags are absent from task.toml, and the ETL script fetches live data
 from an external web API rather than using pre-bundled data files.
 
+<img width="1081" height="833" alt="Screenshot from 2026-03-10 15-36-56" src="https://github.com/user-attachments/assets/5102b409-af4f-4f67-bf4a-f37113cace2b" />
+
+
 ================================================================================
                             CRITICAL ISSUES ❌
 ================================================================================
