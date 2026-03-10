@@ -1,0 +1,24 @@
+services:
+  # The main ETL process
+  main:
+    build: ../solution
+    volumes:
+      - ./output:/app/output
+  etl:
+    build: .
+    image: meteo-pipe
+    volumes:
+      - ./output:/app/output
+    # Default arguments for the ETL
+    command: ["--start", "2024-01-01", "--end", "2024-01-10"]
+
+  # The Visualization process
+  viz:
+    image: meteo-pipe
+    volumes:
+      - ./output:/app/output
+      - ./app:/app  #  mount the whole dir , as docker was creating the visualize folder
+    entrypoint: python3
+    command: ["visualize.py"]
+    depends_on:
+      - etl

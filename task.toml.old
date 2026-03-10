@@ -1,0 +1,31 @@
+version = "1.0"
+
+[metadata]
+author_name = "Veena Rao"
+author_email = "sriveena.us@gmail.com"
+difficulty = "medium"
+category = "data-processing"
+tags = [ "file-operations",]
+expert_time_estimate_min = 60
+junior_time_estimate_min = 120
+
+[verifier]
+timeout_sec = 900.0
+entrypoint = "tests/test.sh"
+
+[agent]
+timeout_sec = 900.0
+
+[environment]
+name = "weather-etl-env"
+type = "docker"
+docker_image = "python:3.11-slim"
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+allow_internet = true
+
+[image]
+python="3.10"
+copy_dir = "solution"

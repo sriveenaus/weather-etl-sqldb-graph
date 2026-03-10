@@ -1,0 +1,25 @@
+# Weather Data ETL and Visualization
+
+ This task is to create a pipeline that processes weather data and generates specific outputs.
+
+### Requirements:
+1. **ETL Process**: Process the provided weather data and store it in two formats:
+   - **SQLite**: Create a database at `output/weather_data.db`. It must contain a table named `daily_summary`.
+   - **Parquet**: Save the processed data to `output/weather_parquet_store/` and `output/weather_data.parquet`.
+   - **CSV**: The input file format for weather data is `/app/data/weather.csv`.
+
+2. **Visualization**: Create a line chart showing temperature trends saved as `output/temperature_plot.png`.
+
+### SQLite Schema:
+The `daily_summary` table must include at least the following columns:
+- `date` (TEXT)
+- `temp_max` (REAL)
+- `temp_min` (REAL)
+
+### Docker Configuration:
+- provide a `docker-compose.yaml` in environment/
+- All outputs must be written to the `output/` directory.
+- Outputs must be derived from the provided weather data file
+- Generate at least one PNG visualization (size > 5000 bytes)
+- At least one SQLite table containing daily temperature aggregates
+- Parquet output may be a file or directory

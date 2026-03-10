@@ -1,0 +1,88 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.14, pytest-9.0.2, pluggy-1.6.0
+rootdir: /app
+collected 4 items
+
+tests/test_outputs.py FF..                                               [100%]
+
+=================================== FAILURES ===================================
+______________________________ test_sqlite_schema ______________________________
+
+    def test_sqlite_schema():
+        db_path = OUTPUT / "weather_data.db"
+        assert db_path.exists(), f"Database not found at {db_path}"
+    
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        # Check for the table name specified in instruction.md
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='daily_summary'")
+>       assert cursor.fetchone() is not None
+E       assert None is not None
+E        +  where None = <built-in method fetchone of sqlite3.Cursor object at 0x7638a0adfdc0>()
+E        +    where <built-in method fetchone of sqlite3.Cursor object at 0x7638a0adfdc0> = <sqlite3.Cursor object at 0x7638a0adfdc0>.fetchone
+
+tests/test_outputs.py:17: AssertionError
+_____________________________ test_sqlite_content ______________________________
+
+self = <pandas.io.sql.SQLiteDatabase object at 0x7638a0b97290>
+sql = 'SELECT * FROM daily_summary', params = None
+
+    def execute(self, sql: str | Select | TextClause, params=None):
+        if not isinstance(sql, str):
+            raise TypeError("Query must be a string unless using sqlalchemy.")
+        args = [] if params is None else [params]
+        cur = self.con.cursor()
+        try:
+>           cur.execute(sql, *args)
+E           sqlite3.OperationalError: no such table: daily_summary
+
+/usr/local/lib/python3.11/site-packages/pandas/io/sql.py:2664: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+    def test_sqlite_content():
+        conn = sqlite3.connect(OUTPUT / "weather_data.db")
+>       df = pd.read_sql_query("SELECT * FROM daily_summary", conn)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_outputs.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.11/site-packages/pandas/io/sql.py:528: in read_sql_query
+    return pandas_sql.read_query(
+/usr/local/lib/python3.11/site-packages/pandas/io/sql.py:2728: in read_query
+    cursor = self.execute(sql, params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pandas.io.sql.SQLiteDatabase object at 0x7638a0b97290>
+sql = 'SELECT * FROM daily_summary', params = None
+
+    def execute(self, sql: str | Select | TextClause, params=None):
+        if not isinstance(sql, str):
+            raise TypeError("Query must be a string unless using sqlalchemy.")
+        args = [] if params is None else [params]
+        cur = self.con.cursor()
+        try:
+            cur.execute(sql, *args)
+            return cur
+        except Exception as exc:
+            try:
+                self.con.rollback()
+            except Exception as inner_exc:  # pragma: no cover
+                ex = DatabaseError(
+                    f"Execution failed on sql: {sql}\n{exc}\nunable to rollback"
+                )
+                raise ex from inner_exc
+    
+            ex = DatabaseError(f"Execution failed on sql '{sql}': {exc}")
+>           raise ex from exc
+E           pandas.errors.DatabaseError: Execution failed on sql 'SELECT * FROM daily_summary': no such table: daily_summary
+
+/usr/local/lib/python3.11/site-packages/pandas/io/sql.py:2676: DatabaseError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/test_outputs.py::test_parquet_content
+PASSED tests/test_outputs.py::test_image_is_valid
+FAILED tests/test_outputs.py::test_sqlite_schema - assert None is not None
+FAILED tests/test_outputs.py::test_sqlite_content - pandas.errors.DatabaseErr...
+========================= 2 failed, 2 passed in 0.96s ==========================
